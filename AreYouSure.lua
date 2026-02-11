@@ -1,14 +1,30 @@
 addon.name    = 'AreYouSure'
 addon.author  = 'Hanayaka'
-addon.version = '1.1'
+addon.version = '1.2'
 addon.desc    = 'Safety prompts before dropping or selling valuable items.'
 addon.link    = 'https://ashitaxi.com/'
 
 require('common')
+local ffi           = require('ffi')
 local chat          = require('chat')
 local imgui         = require('imgui')
 local settings      = require('settings')
 local vendor_prices = require('vendor_prices')
+
+ffi.cdef[[short GetAsyncKeyState(int vKey);]]
+local VK_LEFT   = 0x25
+local VK_RIGHT  = 0x27
+local VK_RETURN = 0x0D
+local VK_ESCAPE = 0x1B
+
+local key_states = { [VK_LEFT] = false, [VK_RIGHT] = false, [VK_RETURN] = false, [VK_ESCAPE] = false }
+
+local function is_key_pressed(vk)
+    local down = bit.band(ffi.C.GetAsyncKeyState(vk), 0x8000) ~= 0
+    local was = key_states[vk]
+    key_states[vk] = down
+    return down and not was
+end
 
 -- Default settings
 local default_settings = T{
@@ -193,12 +209,12 @@ local COLOR_FOCUS_BRD  = { 1.0, 1.0, 1.0, 1.0 }     -- white border for focused 
 ashita.events.register('d3d_present', 'areyousure_present', function()
     if not pending.active then return end
 
-    -- Keyboard navigation (use named constants for cross-version compatibility)
-    if imgui.IsKeyPressed(ImGuiKey_LeftArrow) then
+    -- Keyboard navigation (Win32 GetAsyncKeyState for cross-version compatibility)
+    if is_key_pressed(VK_LEFT) then
         pending.selected = 0
-    elseif imgui.IsKeyPressed(ImGuiKey_RightArrow) then
+    elseif is_key_pressed(VK_RIGHT) then
         pending.selected = 1
-    elseif imgui.IsKeyPressed(ImGuiKey_Enter) then
+    elseif is_key_pressed(VK_RETURN) then
         if pending.selected == 0 then
             whitelist_add(pending.action, pending.item_id)
             AshitaCore:GetPacketManager():AddOutgoingPacket(pending.packet_id, pending.packet_data)
@@ -210,7 +226,7 @@ ashita.events.register('d3d_present', 'areyousure_present', function()
             clear_pending()
             return
         end
-    elseif imgui.IsKeyPressed(ImGuiKey_Escape) then
+    elseif is_key_pressed(VK_ESCAPE) then
         print(chat.header(addon.name):append(chat.message('Blocked: ')):append(chat.warning(pending.item_name)))
         clear_pending()
         return
