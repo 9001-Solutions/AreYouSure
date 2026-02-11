@@ -1,6 +1,6 @@
 addon.name    = 'AreYouSure'
 addon.author  = 'Hanayaka'
-addon.version = '1.0'
+addon.version = '1.1'
 addon.desc    = 'Safety prompts before dropping or selling valuable items.'
 addon.link    = 'https://ashitaxi.com/'
 
@@ -193,12 +193,12 @@ local COLOR_FOCUS_BRD  = { 1.0, 1.0, 1.0, 1.0 }     -- white border for focused 
 ashita.events.register('d3d_present', 'areyousure_present', function()
     if not pending.active then return end
 
-    -- Keyboard navigation
-    if imgui.IsKeyPressed(513) then      -- Left arrow
+    -- Keyboard navigation (use named constants for cross-version compatibility)
+    if imgui.IsKeyPressed(ImGuiKey_LeftArrow) then
         pending.selected = 0
-    elseif imgui.IsKeyPressed(514) then  -- Right arrow
+    elseif imgui.IsKeyPressed(ImGuiKey_RightArrow) then
         pending.selected = 1
-    elseif imgui.IsKeyPressed(525) then  -- Enter
+    elseif imgui.IsKeyPressed(ImGuiKey_Enter) then
         if pending.selected == 0 then
             whitelist_add(pending.action, pending.item_id)
             AshitaCore:GetPacketManager():AddOutgoingPacket(pending.packet_id, pending.packet_data)
@@ -210,7 +210,7 @@ ashita.events.register('d3d_present', 'areyousure_present', function()
             clear_pending()
             return
         end
-    elseif imgui.IsKeyPressed(526) then  -- Escape
+    elseif imgui.IsKeyPressed(ImGuiKey_Escape) then
         print(chat.header(addon.name):append(chat.message('Blocked: ')):append(chat.warning(pending.item_name)))
         clear_pending()
         return
