@@ -19,6 +19,13 @@ When you try to drop or sell a valuable item, a confirmation dialog appears with
 - **Color-coded buttons** — red for the dangerous action, green for the safe option
 - **Per-character settings** — whitelists and thresholds saved separately for each character
 
+## Screenshots
+
+<img width="1014" height="559" alt="image" src="https://github.com/user-attachments/assets/4bbeb918-a95c-4a3e-87c6-9e88b35d98e9" />
+
+<img width="719" height="447" alt="image" src="https://github.com/user-attachments/assets/2a2c56f8-bef0-44da-b3ce-dfd7a9978990" />
+
+
 ## Installation
 
 Download the [latest release](https://github.com/9001-Solutions/AreYouSure/releases/latest) and extract the `AreYouSure` folder into your Ashita `addons/` directory.
